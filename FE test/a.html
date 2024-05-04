@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+        integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <form id="postForm">
+        <label for="name">Ten:</label>
+        <input type="text" id="name" name="name" style="width: 500px; padding: 5px;">
+
+        <br>
+
+        <label for="email">email:</label>
+        <input id="email" name="email" style="width: 500px; height: 200px; padding: 5px;"></input>
+
+        <br>
+        <input type="text" id="password" name="password" style="width: 500px; padding: 5px;">
+        <input type="text" id="phone_number" name="phone_number" style="width: 500px; padding: 5px;">
+
+        <button type="button" style="padding: 5px 10px; background-color: #000; color: #fff;">Thêm Post</button>
+    </form>
+    <script src="index.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#postForm").click(function (event) {
+                event.preventDefault();
+                var name = $("#name").val();
+                var email = $("#email").val();
+                var password = $("#password").val();
+                var phone_number = $("#phone_number").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:8000/api/register",
+                    data: {
+                        name: name,
+                        email: email,
+                        password: password,
+                        phone_number: phone_number
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        data = {
+                            'auth': "",
+                            'chanel': 'create_user'
+                        }
+                        socket.send(JSON.stringify({ event: 'create_user', data }));
+                        socket.addEventListener("message", (event) => {
+                            console.log("Message from server ", event.data);
+                        });
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                        console.error(xhr);
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+        integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
